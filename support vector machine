@@ -1,0 +1,52 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVR
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_absolute_error, r2_score
+
+# 1. Load dataset
+df = pd.read_csv("dailyweather.csv")
+
+# 2. Display first few rows (optional)
+print(df.head())
+
+# 3. Handle missing values
+df = df.dropna()
+
+# 4. Define features (X) and target (y)
+# Change 'humidity' if your column name is different
+X = df.drop('humidity', axis=1)
+y = df['humidity']
+
+# 5. Convert categorical columns into numeric
+X = pd.get_dummies(X)
+
+# 6. Feature Scaling (IMPORTANT for SVM)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 7. Split data
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, random_state=42
+)
+
+# 8. Create SVR model
+model = SVR(kernel='rbf')  # you can try 'linear', 'poly'
+
+# 9. Train model
+model.fit(X_train, y_train)
+
+# 10. Predict
+y_pred = model.predict(X_test)
+
+# 11. Evaluate
+mae = mean_absolute_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print("Mean Absolute Error:", mae)
+print("R2 Score:", r2)
+
+# 12. Predict new data (example)
+# new_data = [[...]]
+# new_data_scaled = scaler.transform(new_data)
+# print("Predicted Humidity:", model.predict(new_data_scaled))
