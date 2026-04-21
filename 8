@@ -29,3 +29,75 @@ y_pred = model.predict(X_test)
 
 # accuracy
 print("Accuracy:", accuracy_score(y_test, y_pred))
+
+
+------------------------------------------------------------------------------------------------------
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+# 1️⃣ Load dataset
+df = pd.read_csv("weatherAUS.csv")
+
+# 2️⃣ Remove missing values
+df = df.dropna()
+
+# 3️⃣ Convert Yes/No → 1/0
+df['RainTomorrow'] = df['RainTomorrow'].map({'Yes': 1, 'No': 0})
+
+# 4️⃣ Select features and target
+X = df[['MinTemp', 'MaxTemp', 'Humidity9am']]
+y = df['RainTomorrow']
+
+# 5️⃣ Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 6️⃣ Train model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+# 7️⃣ Test model
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+
+# ===============================
+# 8️⃣ STATIC SAMPLE TESTING
+# ===============================
+
+print("\n--- Static Sample Test ---")
+
+# Example input: [MinTemp, MaxTemp, Humidity9am]
+sample_input = [[15, 25, 80]]
+
+prediction = model.predict(sample_input)
+
+if prediction[0] == 1:
+    print("Input:", sample_input)
+    print("Prediction: Rain Tomorrow 🌧️")
+else:
+    print("Input:", sample_input)
+    print("Prediction: No Rain Tomorrow ☀️")
+
+
+# ===============================
+# 9️⃣ USER INPUT TESTING
+# ===============================
+
+print("\n--- User Input Test ---")
+
+min_temp = float(input("Enter MinTemp: "))
+max_temp = float(input("Enter MaxTemp: "))
+humidity = float(input("Enter Humidity9am: "))
+
+user_input = [[min_temp, max_temp, humidity]]
+
+user_prediction = model.predict(user_input)
+
+if user_prediction[0] == 1:
+    print("Prediction: Rain Tomorrow 🌧️")
+else:
+    print("Prediction: No Rain Tomorrow ☀️")
